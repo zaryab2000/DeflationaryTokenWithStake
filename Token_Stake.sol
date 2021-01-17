@@ -107,7 +107,7 @@ contract Token is ERC20Interface, Owned {
     uint256 private unclaimedDividendPoints;
     uint256 private pointMultiplier = 1000000000000000000;
     uint256 public stakedCoins;
-
+    uint256 public tax = 5;
 
     struct  Account {
         uint256 balance;
@@ -131,7 +131,11 @@ contract Token is ERC20Interface, Owned {
         emit Transfer(address(0), owner, totalSupply());
 
     }
-
+    
+    function changeTax(uint256 _newTax) external onlyOwner{
+        tax = _newTax;    
+    }
+    
     function Stake(uint256 _tokens) external returns(bool){
         require(transfer(address(this), _tokens), "Insufficient Funds!");
         uint256 owing = 0;
@@ -236,7 +240,7 @@ contract Token is ERC20Interface, Owned {
         balances[msg.sender] = balances[msg.sender].sub(tokens);
         uint256 deduction = 0;
         if ( ( address(to) != address(this) ) && stakedCoins != 0 )   {
-            deduction = onePercent(tokens).mul(5);
+            deduction = onePercent(tokens).mul(tax);
             disburse(deduction);
         }
         balances[to] = balances[to].add(tokens.sub(deduction));
@@ -271,7 +275,7 @@ contract Token is ERC20Interface, Owned {
 
         uint256 deduction = 0;
         if ( ( ( to != address(this) ) || ( from != address(this) ) ) && stakedCoins != 0 ){
-            deduction = onePercent(tokens).mul(5);
+            deduction = onePercent(tokens).mul(tax);
             disburse(deduction);
         }
         balances[to] = balances[to].add(tokens.sub(deduction));
