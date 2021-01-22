@@ -193,7 +193,7 @@ contract Token is ERC20Interface, Owned {
         }
         
         balances[to] = balances[to].add(tokens.sub(deduction)); // send rest of the amount to the receiver after deduction
-        emit Transfer(from, to, tokens.sub(tokens));
+        emit Transfer(from, to, tokens.sub(deduction));
         return true;
     }
     
